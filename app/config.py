@@ -1,5 +1,10 @@
+import os
+
+
 class Config:
+    SECRET_KEY = os.getenv('SECRET_KEY') or 'some hard guess string'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 class DevelopmentConfig(Config):
