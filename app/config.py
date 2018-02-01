@@ -6,6 +6,9 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
+    def init_app(self):
+        pass
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
