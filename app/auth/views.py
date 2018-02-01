@@ -11,11 +11,12 @@ from ..models import User
 def register():
     form = UserRegisterForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, student_id=form.student_id.data, email_address=form.email.data)
+        user = User(username=form.username.data, student_id=form.student_id.data, email_address=form.email.data,
+                    password=form.password.data)
         db.session.add(user)
 
         flash('注册成功，你现在可以登录了！')
-        redirect(url_for('auth.login'))
+        return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 
 
