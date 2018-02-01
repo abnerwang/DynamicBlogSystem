@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}安徽大学博客系统{% endblock %}
+{% block page_content %}
+    <p>
+        你好,
+        {% if current_user.is_authenticated() %}
+            {{ current_user.username }}
+        {% else %}
+            欢迎使用安徽大学博客系统！
+        {% endif %}
+    </p>
+{% endblock %}
