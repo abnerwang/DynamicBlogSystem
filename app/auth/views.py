@@ -85,7 +85,7 @@ def change_password():
     form = ChangePwdForm()
     if form.validate_on_submit():
         if current_user.verify_password(form.old_password.data):
-            current_user.change_password(form.password.data)
+            current_user.password = form.password.data
             db.session.add(current_user)
             flash('你已成功更改了密码！')
         else:
