@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, request, url_for
 from flask_login import login_user, logout_user, login_required, current_user
 
 from . import auth
-from .forms import UserRegisterForm, UserLoginForm
+from .forms import UserRegisterForm, UserLoginForm, ChangePwdForm
 from .. import db
 from ..email import send_email
 from ..models import User
@@ -10,8 +10,8 @@ from ..models import User
 
 @auth.before_app_request
 def before_request():
-    if current_user.is_authenticated() and not current_user.confirmed and request.endpoint[
-                                                                          :5] != 'auth.' and request.endpoint != 'static':
+    if current_user.is_authenticated and not current_user.confirmed and request.endpoint[
+                                                                        :5] != 'auth.' and request.endpoint != 'static':
         return redirect(url_for('auth.unconfirmed'))
 
 
@@ -50,7 +50,7 @@ def logout():
     return redirect(url_for('main.index'))
 
 
-@auth.route('/confirm/<token>')
+@auth.route('/confirm/<token>', methods=['GET', 'POST'])
 @login_required  # 登录后才能确认账户
 def confirm(token):
     if current_user.confirmed:
@@ -65,7 +65,7 @@ def confirm(token):
 
 @auth.route('/unconfirmed')
 def unconfirmed():
-    if current_user.is_anonymous() is current_user.confirmed:
+    if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for('main.index'))
     return render_template('auth/unconfirmed.html', user=current_user)
 
@@ -74,6 +74,20 @@ def unconfirmed():
 @login_required
 def resend_confirmation():
     token = current_user.generate_confirmation_token(expiration=3600)
-    send_email(current_user.email_address, '确认你的账户', 'auth/email/confirm', user=user, token=token)
+    send_email(current_user.email_address, '确认你的账户', 'auth/email/confirm', user=current_user, token=token)
     flash('一封新的确认邮件已发送至你的邮箱，请及时前往确认！')
     return redirect(url_for('main.index'))
+
+
+@auth.route('/changePwd', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePwdForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.old_password.data):
+            current_user.change_password(form.password.data)
+            flash('你已成功更改了密码！')
+        else:
+            flash('你所输入的旧密码不正确！')
+
+    return render_template('auth/changePwd.html', form=form)

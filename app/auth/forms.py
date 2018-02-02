@@ -38,3 +38,12 @@ class UserLoginForm(FlaskForm):
         user = User.query.filter_by(email_address=field.data).first()
         if user is None:
             raise ValidationError('您所输入的电子邮件地址尚未注册！')
+
+
+class ChangePwdForm(FlaskForm):
+    old_password = StringField('旧密码', validators=[DataRequired()])
+    password = StringField('新密码', validators=[DataRequired(), EqualTo('password2', message='两次输入的密码不一致！'),
+                                              Regexp('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$',
+                                                     message='密码必须同时含有字母、数字和特殊字符，且不能低于 8 位！')])
+    password2 = StringField('确认新密码', validators=[DataRequired()])
+    submit = SubmitField('确认修改')
