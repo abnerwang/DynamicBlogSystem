@@ -9,9 +9,9 @@ from . import login_manager
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     username = db.Column(db.String(64), unique=True)
-    student_id = db.Column(db.String(10), unique=True)
+    student_id = db.Column(db.String(10), unique=True, index=True)
     email_address = db.Column(db.String(128), unique=True)
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
@@ -34,6 +34,11 @@ class User(UserMixin, db.Model):
     def generate_confirmation_token(self, expiration):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         token = s.dumps({'confirm': self.id})
+        return token
+
+    def generate_reset_token(self, expiration):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        token = s.dumps({'student_id': self.student_id})
         return token
 
     def confirm(self, token):
