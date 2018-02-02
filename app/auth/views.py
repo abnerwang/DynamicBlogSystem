@@ -1,5 +1,6 @@
-from flask import render_template, flash, redirect, request, url_for
+from flask import render_template, flash, redirect, request, url_for, current_app
 from flask_login import login_user, logout_user, login_required, current_user
+from itsdangerous import JSONWebSignatureSerializer as Serializer
 
 from . import auth
 from .forms import UserRegisterForm, UserLoginForm, ChangePwdForm
@@ -22,10 +23,12 @@ def register():
         user = User(username=form.username.data, student_id=form.student_id.data, email_address=form.email.data,
                     password=form.password.data)
         db.session.add(user)
+        db.session.commit()
 
         token = user.generate_confirmation_token(expiration=3600)
         send_email(user.email_address, '确认你的账户', 'auth/email/confirm', user=user, token=token)
         flash('注册成功，你现在可以登录了！系统已向你的电子邮件地址发送了一封确认邮件，请于 1 小时内确认账户！')
+
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 
@@ -51,15 +54,24 @@ def logout():
 
 
 @auth.route('/confirm/<token>', methods=['GET', 'POST'])
-@login_required  # 登录后才能确认账户
 def confirm(token):
-    if current_user.confirmed:
-        flash('你的账户已经确认过了！')
-        return redirect(url_for('main.index'))
-    if current_user.confirm(token):
-        flash('你已经成功确认了账户，谢谢！')
-    else:
-        flash('链接过期或无效，请前往用户资料页重新发送确认邮件！')
+    s = Serializer(current_app.config['SECRET_KEY'])
+    try:
+        data = s.loads(token)
+        id = data.get('confirm')
+        user = User.query.filter_by(id=id).first()
+        if user is None:
+            flash('用户不存在！')
+            return redirect(url_for('main.index'))
+        if user.confirmed:
+            flash('你的账户已经确认过了！')
+            return redirect(url_for('main.index'))
+        if user.confirm(token):
+            flash('你已经成功确认了账户，谢谢！')
+        else:
+            flash('链接过期或无效，请前往用户资料页重新发送确认邮件！')
+    except:
+        flash('链接无效，请前往用户资料页发送确认邮件！')
     return redirect(url_for('main.index'))
 
 
