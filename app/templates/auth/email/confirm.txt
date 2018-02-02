@@ -1,0 +1,10 @@
+{{ user.username }}：
+
+你好，欢迎使用安徽大学博客系统，为了验证你的电子邮箱地址，请于一小时内前往以下链接确认您的账户：
+
+{{ url_for('auth.confirm', token=token, _external=True) }}
+
+安徽大学博客系统
+
+
+注意：请勿直接回复此邮件。

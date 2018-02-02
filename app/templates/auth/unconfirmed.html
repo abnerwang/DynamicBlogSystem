@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}安徽大学博客系统 —— 激活你的账户{% endblock %}
+{% block page_content %}
+    <div class="page-header">
+        <h1>你好，{{ user.username }}！</h1>
+        <h2>你还没有确认你的账户。</h2>
+        <p>
+            在访问这个页面之前你需要确认你的账户，请检查你的注册邮箱，你应该收到了一封带有激活链接的电子邮件。<br/>
+            <br/>
+            <br/>
+            如果需要再次发送确认邮件，<a href={{ url_for('auth.resend_confirmation') }}>请点击这里</a>。
+        </p>
+    </div>
+{% endblock %}
