@@ -86,6 +86,7 @@ def change_password():
     if form.validate_on_submit():
         if current_user.verify_password(form.old_password.data):
             current_user.change_password(form.password.data)
+            db.session.add(current_user)
             flash('你已成功更改了密码！')
         else:
             flash('你所输入的旧密码不正确！')
