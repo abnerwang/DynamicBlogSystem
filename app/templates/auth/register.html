@@ -2,10 +2,92 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% block title %}安徽大学博客系统 —— 注册{% endblock %}
 {% block page_content %}
-    <div class="page-header">
-        <h1>用户注册</h1>
-    </div>
-    <div class="col-md-4">
-        {{ wtf.quick_form(form) }}
+    <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+        <div class="page-header" style="text-align: center">
+            <h1>用户注册</h1>
+        </div>
+        <form method="post" class="form" role="form">
+            {{ form.hidden_tag() }}
+            {% if form.errors.student_id %}
+                <div class="form-group has-error">
+                    {{ form.student_id.label(class="control-label") | safe }}
+                    {{ form.student_id(class="form-control", required=True) }}
+                    {% for error in form.errors.student_id %}
+                        <p class="help-block">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="form-group">
+                    {{ form.student_id.label(class="control-label") | safe }}
+                    {{ form.student_id(class="form-control", required=True) }}
+                </div>
+            {% endif %}
+
+            {% if form.errors.username %}
+                <div class="form-group has-error required">
+                    {{ form.username.label(class="control-label") | safe }}
+                    {{ form.username(class="form-control", required=True) }}
+                    {% for error in form.errors.username %}
+                        <p class="help-block">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="form-group required">
+                    {{ form.username.label(class="control-label") | safe }}
+                    {{ form.username(class="form-control", required=True) }}
+                </div>
+            {% endif %}
+
+            {% if form.errors.email %}
+                <div class="form-group has-error required">
+                    {{ form.email.label(class="control-label") | safe }}
+                    {{ form.email(class="form-control", required=True) }}
+                    {% for error in form.errors.email %}
+                        <p class="help-block">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="form-group required">
+                    {{ form.email.label(class="control-label") | safe }}
+                    {{ form.email(class="form-control", required=True) }}
+                </div>
+            {% endif %}
+
+            {% if form.errors.password %}
+                <div class="form-group required">
+                    <label for="password">密码</label>
+                    <input type="password" class="form-control" name="password"/>
+                    {% for error in form.errors.password %}
+                        <p class="help-block">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="form-group required">
+                    <label for="password">密码</label>
+                    <input type="password" class="form-control" name="password"/>
+                </div>
+            {% endif %}
+
+            {% if form.errors.password2 %}
+                <div class="form-group required">
+                    <label for="password2">密码</label>
+                    <input type="password" class="form-control" name="password2"/>
+                    {% for error in form.errors.password2 %}
+                        <p class="help-block">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="form-group required">
+                    <label for="password2">确认密码</label>
+                    <input type="password" class="form-control" name="password2"/>
+                </div>
+            {% endif %}
+
+            <input type="submit" class="btn btn-primary" style="width: 100%;" value="注册"/>
+        </form>
+        <br/>
+        <div class="register">
+            <a type="button" class="btn btn-primary" style="width: 100%;" href={{ url_for('auth.login') }}>已有账号？登录</a>
+        </div>
     </div>
 {% endblock %}

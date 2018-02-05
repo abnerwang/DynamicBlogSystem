@@ -1,0 +1,12 @@
+{{ user.username }}：
+
+    你好，请点击下面的链接前往浏览器重设你的密码（1 小时内有效）：
+
+    {{ url_for('auth.reset_password', token=token, _external=True) }}
+
+    如果你不曾操作重设密码选项，请忽略此邮件。
+
+    安徽大学博客系统
+
+
+    注意：请勿直接回复此邮件。

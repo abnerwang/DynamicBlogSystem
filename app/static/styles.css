@@ -1,0 +1,45 @@
+.navbar a {
+    color: white;
+}
+
+.navbar-nav > li > a {
+    letter-spacing: 0px;
+    color: #fff;
+    text-align: center;
+}
+
+.navbar-nav > li > a:focus, .navbar-nav > li > a:hover, .navbar-right > li > a:focus, .navbar-right > li > a:hover {
+    letter-spacing: 7px;
+    background: none;
+}
+
+.navbar-nav > li > a:after, .navbar-nav > li > a:before, .navbar-right > li > a:after, .navbar-right > li > a:before {
+    backface-visibility: hidden;
+    border: 0.5px solid transparent;
+    bottom: 0px;
+    content: " ";
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    transition: all 280ms ease-in-out;
+    width: 0;
+}
+
+.navbar-nav > li > a:hover:after, .navbar-nav > li > a:hover:before, .navbar-right > li > a:hover:after, .navbar-right > li > a:hover:before {
+    backface-visibility: hidden;
+    border-color: #fff;
+    transition: width 350ms ease-in-out;
+    width: 110%;
+    vertical-align: middle;
+    horiz-align: center;
+    text-align: center;
+}
+
+.navbar-nav > li > a:hover:before, .navbar-right > li > a:hover:before {
+    bottom: auto;
+    top: 0;
+    vertical-align: middle;
+    text-align: center;
+    horiz-align: center;
+    width: 110%;
+}

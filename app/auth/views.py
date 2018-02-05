@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from itsdangerous import JSONWebSignatureSerializer as Serializer
 
 from . import auth
-from .forms import UserRegisterForm, UserLoginForm, ChangePwdForm
+from .forms import UserRegisterForm, UserLoginForm, ChangePwdForm, ResetPasswordRequestForm, ResetPasswordForm
 from .. import db
 from ..email import send_email
 from ..models import User
@@ -38,6 +38,9 @@ def login():
     form = UserLoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email_address=form.email.data).first()
+        if user is None:
+            flash('该邮箱尚未注册此系统！')
+            return render_template('auth/login.html', form=form)
         if user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
             return redirect(request.args.get('next') or url_for('main.index'))
@@ -99,8 +102,45 @@ def change_password():
         if current_user.verify_password(form.old_password.data):
             current_user.password = form.password.data
             db.session.add(current_user)
-            flash('你已成功更改了密码！')
+            flash('成功修改了密码！')
         else:
             flash('你所输入的旧密码不正确！')
 
     return render_template('auth/changePwd.html', form=form)
+
+
+@auth.route('/resetPwdViaEmail', methods=['GET', 'POST'])
+def reset_password_request():
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        user = User.query.filter_by(email_address=email).first()
+        if user is None:
+            flash('你输入的邮箱尚未注册！')
+            return render_template('auth/resetPwdViaEmail.html', form=form)
+        else:
+            token = user.generate_reset_token(expiration=3600)
+            send_email(user.email_address, '重设密码', 'auth/email/resetPwd', user=user, token=token,
+                       next=request.args.get('next'))
+            flash('一封用于重设密码的邮件已发送至你的邮箱！')
+            form.email.data = ''
+    return render_template('auth/resetPwdViaEmail.html', form=form)
+
+
+@auth.route('/resetPwd/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+            student_id = data.get('student_id')
+            user = User.query.filter_by(student_id=student_id).first()
+            user.password = form.password.data
+            db.session.add(user)
+            flash('你的密码已重设，现在可以使用新密码登录了！')
+            return redirect(url_for('auth.login'))
+        except:
+            flash('链接过期或无效！')
+            return redirect(url_for('main.index'))
+    return render_template('auth/resetPassword.html', form=form)

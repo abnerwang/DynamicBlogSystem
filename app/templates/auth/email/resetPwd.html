@@ -1,0 +1,14 @@
+<p><b>{{ user.username }}</b>：</p>
+<br/>
+<p>你好，请点击以下链接前往浏览器重设你的密码（1 小时内有效）：</p>
+<br/>
+<p>
+    <a href={{ url_for('auth.reset_password', token=token, _external=True) }}>{{ url_for('auth.reset_password', token=token, _external=True) }}</a>
+</p>
+<br/>
+<p>如果你不曾操作重设密码选项，请忽略此邮件。</p>
+<br/>
+<p>安徽大学博客系统</p>
+<br/>
+<br/>
+<p>注意：请勿直接回复此邮件！</p>

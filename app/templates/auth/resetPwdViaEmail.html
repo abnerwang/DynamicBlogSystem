@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}安徽大学博客系统 —— 电子邮件重设密码{% endblock %}
+{% block page_content %}
+    <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+        <div class="page-header" style="text-align: center">
+            <h1>提交邮箱重设密码</h1>
+        </div>
+
+        <form method="post" class="form" role="form">
+            {{ form.hidden_tag() }}
+            {% if form.errors.email %}
+                <div class="form-group has-error required">
+                    {{ form.email.label(class="control-label") | safe }}
+                    {{ form.email(class="form-control", required=True) }}
+                    {% for error in form.errors.email %}
+                        <p class="help-block">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="form-group required">
+                    {{ form.email.label(class="control-label") | safe }}
+                    {{ form.email(class="form-control", required=True) }}
+                </div>
+            {% endif %}
+            <input type="submit" class="btn btn-primary" style="width: 100%;" value="提交"/>
+        </form>
+    </div>
+{% endblock %}
